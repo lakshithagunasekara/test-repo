@@ -1,0 +1,80 @@
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <div class="site-footer-line">
+      <span class="site-footer-brand">IEEE Industrial Electronics Society</span>
+      <span class="site-footer-sep">·</span>
+      <span>Powered by the Web &amp; Information Committee</span>
+      <span class="site-footer-sep">·</span>
+      <a href="https://www.ieee-ies.org/index.php?option=com_content&amp;view=article&amp;id=356" target="_blank" rel="noopener">Join IEEE IES</a>
+    </div>
+    <div class="site-footer-line site-footer-meta">
+      <span class="site-footer-social" aria-label="IEEE IES on social media">
+        <a href="https://www.facebook.com/IndustrialElectronicsSociety/" target="_blank" rel="noopener" title="Facebook"><img src="https://www.ieee-ies.org/modules/mod_ieeesocialmedia/icons/facebook.png" alt="Facebook"></a>
+        <a href="https://twitter.com/ieee_ies" target="_blank" rel="noopener" title="Twitter"><img src="https://www.ieee-ies.org/modules/mod_ieeesocialmedia/icons/twitter.png" alt="Twitter"></a>
+        <a href="https://www.linkedin.com/groups/3124640" target="_blank" rel="noopener" title="LinkedIn"><img src="https://www.ieee-ies.org/modules/mod_ieeesocialmedia/icons/linkedin.png" alt="LinkedIn"></a>
+        <a href="https://www.youtube.com/channel/UCKg8GNii0Q-ieXE56AXosGg/featured" target="_blank" rel="noopener" title="YouTube"><img src="https://www.ieee-ies.org/modules/mod_ieeesocialmedia/icons/youtube.png" alt="YouTube"></a>
+      </span>
+      <span class="site-footer-copy">&copy; {{ now.Format "2006" }} IEEE — All rights reserved.</span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  /* Sticky site-footer: `margin-top: auto` pushes it to the bottom of <main>
+     when content is shorter than the viewport, so it doesn't float up into
+     the middle of empty pages. On long pages it still appears after content
+     as normal. `#R-body-inner` is already display:flex, flex-direction:column
+     in Relearn's CSS so this works out of the box. */
+  .site-footer {
+    margin-top: auto;
+    padding: 0.75rem 0 0.5rem;
+    border-top: 1px solid var(--SITE-BORDER, rgba(0, 0, 0, 0.08));
+    background: transparent;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: var(--SITE-TEXT-MUTED, #64748b);
+  }
+  .site-footer-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .site-footer-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 0.5rem;
+  }
+  .site-footer-brand { font-weight: 600; color: var(--SITE-TEXT, #334155); }
+  .site-footer-sep   { color: var(--SITE-BORDER, #cbd5e1); user-select: none; }
+  .site-footer a {
+    color: var(--SITE-BRAND-BLUE, #0082ba);
+    text-decoration: none;
+  }
+  .site-footer a:hover { text-decoration: underline; }
+
+  .site-footer-meta {
+    justify-content: space-between;
+  }
+  .site-footer-social {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .site-footer-social a {
+    display: inline-flex;
+    width: 18px;
+    height: 18px;
+    opacity: 0.6;
+    transition: opacity 0.15s ease;
+  }
+  .site-footer-social a:hover { opacity: 1; }
+  .site-footer-social img { width: 100%; height: auto; display: block; }
+  .site-footer-copy { white-space: nowrap; }
+
+  @media (max-width: 600px) {
+    .site-footer { font-size: 0.72rem; padding: 0.6rem 0 0.4rem; }
+    .site-footer-meta { flex-direction: column; align-items: flex-start; gap: 0.4rem; }
+    .site-footer-copy { white-space: normal; }
+  }
+</style>

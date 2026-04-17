@@ -1,0 +1,128 @@
+{{- /*
+  Timeline-style news / announcement post. Intuitive for non-technical
+  authors: fill in a date, pick a type, write the content in markdown.
+
+  Usage (block form, markdown body):
+
+      < newsItem date="2026-04-12" type="deadline" title="Paper submission extended" >
+      The deadline has been extended to **30 April 2026**. See the
+      [For Authors](/for_authors/) page for details.
+      < /newsItem >
+
+  Params:
+    date   (required)  ISO "2026-04-12" or any human-readable form
+                        ("12 April 2026", "Apr 12, 2026" all work)
+    type   (optional)  update (default) | deadline | announcement | call | warning
+    title  (optional)  short headline rendered bold above the body
+*/ -}}
+{{- $date  := .Get "date" }}
+{{- $type  := .Get "type" | default "update" }}
+{{- $title := .Get "title" }}
+{{- /* Try to parse the date and produce a pretty format; fall back to the
+       raw string if parsing fails. */ -}}
+{{- $parsed := time $date }}
+{{- $pretty := $date }}
+{{- if $parsed }}{{ $pretty = $parsed.Format "02 Jan 2006" }}{{ end }}
+<article class="news-item news-item--{{ $type }}">
+  <div class="news-item-meta">
+    <time class="news-item-date"{{ if $parsed }} datetime="{{ $parsed.Format "2006-01-02" }}"{{ end }}>{{ $pretty }}</time>
+    <span class="news-item-type news-item-type--{{ $type }}">{{ $type }}</span>
+  </div>
+  <div class="news-item-body">
+    {{- with $title }}<h4 class="news-item-title">{{ . }}</h4>{{ end }}
+    {{ .Inner | .Page.RenderString }}
+  </div>
+</article>
+
+<style>
+  article .news-item {
+    display: grid;
+    grid-template-columns: 7.5rem 1fr;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--SITE-BORDER, #e2e8f0);
+    position: relative;
+  }
+  article .news-item:last-of-type { border-bottom: 0; }
+  article .news-item .news-item-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding-top: 0.15rem;
+    border-inline-end: 1px solid var(--SITE-BORDER, #e2e8f0);
+    padding-inline-end: 1rem;
+    position: relative;
+  }
+  /* Dot marker on the vertical spine between date and body. */
+  article .news-item .news-item-meta::after {
+    content: "";
+    position: absolute;
+    right: -5px;
+    top: 0.5rem;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid var(--SITE-BRAND-BLUE, #0082ba);
+    box-sizing: border-box;
+  }
+  article .news-item .news-item-date {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--SITE-HEADING, #0f172a);
+    white-space: nowrap;
+  }
+  article .news-item .news-item-type {
+    display: inline-block;
+    width: max-content;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 0.1rem 0.45rem;
+    border-radius: 999px;
+  }
+  /* Type colours — pick readable pairs for each category. */
+  article .news-item-type--update       { background: rgba(100, 116, 139, 0.12); color: #475569; border: 1px solid rgba(100,116,139,0.3); }
+  article .news-item-type--deadline     { background: rgba(236, 140, 0, 0.14);   color: #b45309; border: 1px solid rgba(236,140,0,0.4); }
+  article .news-item-type--announcement { background: rgba(0, 130, 186, 0.12);   color: #0069a1; border: 1px solid rgba(0,130,186,0.3); }
+  article .news-item-type--call         { background: rgba(34, 197, 94, 0.12);   color: #16a34a; border: 1px solid rgba(34,197,94,0.3); }
+  article .news-item-type--warning      { background: rgba(220, 38, 38, 0.12);   color: #b91c1c; border: 1px solid rgba(220,38,38,0.3); }
+
+  /* Dot matches the type colour */
+  article .news-item--deadline     .news-item-meta::after { border-color: #b45309; }
+  article .news-item--announcement .news-item-meta::after { border-color: #0069a1; }
+  article .news-item--call         .news-item-meta::after { border-color: #16a34a; }
+  article .news-item--warning      .news-item-meta::after { border-color: #b91c1c; }
+
+  article .news-item .news-item-body {
+    color: var(--SITE-TEXT, #334155);
+    font-size: 0.95rem;
+    line-height: 1.55;
+    padding-top: 0.1rem;
+  }
+  article .news-item .news-item-body > :first-child { margin-top: 0; }
+  article .news-item .news-item-body > :last-child  { margin-bottom: 0; }
+  article .news-item .news-item-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--SITE-HEADING, #0f172a);
+    margin: 0 0 0.4rem;
+  }
+
+  @media (max-width: 640px) {
+    article .news-item {
+      grid-template-columns: 1fr;
+      gap: 0.35rem;
+    }
+    article .news-item .news-item-meta {
+      flex-direction: row;
+      align-items: center;
+      gap: 0.6rem;
+      border-inline-end: 0;
+      padding-inline-end: 0;
+      padding-bottom: 0.25rem;
+    }
+    article .news-item .news-item-meta::after { display: none; }
+  }
+</style>

@@ -1,0 +1,131 @@
+{{- /*
+  Important-dates table with status indicators (✓ for done, accent line for
+  the next upcoming deadline).
+
+  Usage:
+
+    {{< keyDates dates=`[
+      {"event": "Special Session Proposals",     "date": "30 Nov 2025", "done": true},
+      {"event": "Paper Submission",              "date": "30 Apr 2026", "done": true},
+      {"event": "Acceptance Notification",       "date": "15 May 2026"},
+      {"event": "Final Manuscript Submission",   "date": "01 Jun 2026"},
+      {"event": "Author Registration Deadline",  "date": "15 Jun 2026"}
+    ]` >}}
+
+  All entries with `done: true` get a ✓ and a muted look. The first entry
+  WITHOUT `done: true` gets the "next upcoming" highlight (subtle blue tint).
+  Edit the array directly when a deadline passes — set `done: true` on it.
+*/ -}}
+{{- $dates := .Get "dates" | transform.Unmarshal }}
+{{- $foundUpcoming := false }}
+<div class="key-dates-wrap">
+  <table class="key-dates">
+    <thead>
+      <tr>
+        <th class="key-dates-event">Event</th>
+        <th class="key-dates-date">Date</th>
+        <th class="key-dates-status" aria-label="Status"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {{- range $dates }}
+        {{- $isDone := .done | default false }}
+        {{- $isNext := false }}
+        {{- if and (not $isDone) (not $foundUpcoming) }}
+          {{- $isNext = true }}
+          {{- $foundUpcoming = true }}
+        {{- end }}
+        <tr class="{{ if $isDone }}is-done{{ else if $isNext }}is-next{{ end }}">
+          <td class="key-dates-event">{{ .event | safeHTML }}</td>
+          <td class="key-dates-date">{{ .date | safeHTML }}</td>
+          <td class="key-dates-status">
+            {{- if $isDone }}<span class="key-dates-badge key-dates-badge--done" title="Completed">✓ Done</span>
+            {{- else if $isNext }}<span class="key-dates-badge key-dates-badge--next" title="Next upcoming deadline">Next</span>
+            {{- end }}
+          </td>
+        </tr>
+      {{- end }}
+    </tbody>
+  </table>
+</div>
+
+<style>
+  article .key-dates-wrap {
+    margin: 1rem 0;
+    border: 1px solid var(--SITE-BORDER, #e2e8f0);
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+  }
+  article table.key-dates {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+    font-size: 0.95rem;
+  }
+  article table.key-dates thead th {
+    background: var(--SITE-SURFACE, #f8fafc);
+    color: var(--SITE-TEXT-MUTED, #64748b);
+    font-weight: 600;
+    text-align: left;
+    padding: 0.6rem 0.9rem;
+    border-bottom: 1px solid var(--SITE-BORDER, #e2e8f0);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  article table.key-dates td {
+    padding: 0.65rem 0.9rem;
+    border-bottom: 1px solid var(--SITE-BORDER, #e2e8f0);
+    color: var(--SITE-TEXT, #334155);
+    vertical-align: middle;
+  }
+  article table.key-dates tbody tr:last-child td { border-bottom: 0; }
+  article table.key-dates td.key-dates-date {
+    white-space: nowrap;
+    color: var(--SITE-HEADING, #0f172a);
+    font-weight: 500;
+  }
+  article table.key-dates th.key-dates-status,
+  article table.key-dates td.key-dates-status {
+    width: 100px;
+    min-width: 100px;
+    white-space: nowrap;
+    text-align: right;
+  }
+  /* completed row — muted, ✓ badge */
+  article table.key-dates tr.is-done td {
+    color: var(--SITE-TEXT-MUTED, #64748b);
+    text-decoration: line-through;
+    text-decoration-color: rgba(100, 116, 139, 0.4);
+  }
+  article table.key-dates tr.is-done td.key-dates-status { text-decoration: none; }
+  /* next-upcoming row — subtle accent so the eye lands on it */
+  article table.key-dates tr.is-next td {
+    background: rgba(0, 130, 186, 0.06);   /* IEEE blue tint */
+  }
+  article table.key-dates tr.is-next td.key-dates-event {
+    font-weight: 600;
+    color: var(--SITE-BRAND-BLUE, #0082ba);
+  }
+  /* Badges — modifier classes (--done / --next) avoid name collisions with
+     the slideshow's .prev/.next arrows that style the bare `.next` class. */
+  article .key-dates-badge {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    line-height: 1.3;
+    padding: 0.18rem 0.55rem;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  article .key-dates-badge--done {
+    background: rgba(34, 197, 94, 0.12);    /* green-500 @ 12% */
+    color: #16a34a;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+  }
+  article .key-dates-badge--next {
+    background: var(--SITE-BRAND-BLUE, #0082ba);
+    color: #fff;
+  }
+</style>

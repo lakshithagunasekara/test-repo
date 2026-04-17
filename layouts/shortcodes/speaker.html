@@ -1,0 +1,148 @@
+{{- /*
+  Speaker / keynote / tutorial / invited talk block. Two-column on desktop
+  (photo on the left, info on the right), single-column on mobile.
+
+  Usage (block form so the abstract + bio can be Markdown):
+
+      < speaker
+          name="Prof. Jane Doe"
+          affiliation="University of Example"
+          title="Real-time Data, Privacy, and the Distributed Grid"
+          image="/images/keynotes/jane.jpg"
+          when="13 May 2026, 09:00-10:00"
+          where="Auditorium A"
+          homepage="https://example.org/~jane"
+      >
+      Abstract paragraph here. Supports **markdown**.
+
+      **Bio** - biography paragraph here.
+      < /speaker >
+
+  Replace each `<` with the doubled curly + percent and `>` with percent +
+  doubled curly when calling. Only `name` is required; the rest are optional.
+  All shortcode invocation symbols are intentionally written without their
+  template braces here so Hugo doesn't try to parse this docstring.
+*/ -}}
+{{- $name        := .Get "name" }}
+{{- $affiliation := .Get "affiliation" }}
+{{- $title       := .Get "title" }}
+{{- $image       := .Get "image" }}
+{{- $when        := .Get "when" }}
+{{- $where       := .Get "where" }}
+{{- $homepage    := .Get "homepage" }}
+<section class="speaker-card">
+  {{- with $image }}
+  <div class="speaker-photo">
+    <img src="{{ . | relURL }}" alt="{{ $name }}" loading="lazy">
+  </div>
+  {{- end }}
+  <div class="speaker-body">
+    {{- with $title }}<h3 class="speaker-title">{{ . | safeHTML }}</h3>{{ end }}
+    <div class="speaker-meta">
+      {{- with $name }}
+        <span class="speaker-name">
+          {{- if $homepage -}}
+            <a href="{{ $homepage }}" target="_blank" rel="noopener">{{ . }} ↗</a>
+          {{- else -}}
+            {{ . }}
+          {{- end -}}
+        </span>
+      {{- end }}
+      {{- with $affiliation }}<span class="speaker-affiliation">{{ . }}</span>{{ end }}
+    </div>
+    {{- if or $when $where }}
+    <div class="speaker-when-where">
+      {{- with $when }}<span class="speaker-when"><i class="fa-fw far fa-calendar-alt" aria-hidden="true"></i> {{ . }}</span>{{ end }}
+      {{- with $where }}<span class="speaker-where"><i class="fa-fw fas fa-map-marker-alt" aria-hidden="true"></i> {{ . }}</span>{{ end }}
+    </div>
+    {{- end }}
+    <div class="speaker-content">
+      {{ .Inner | .Page.RenderString }}
+    </div>
+  </div>
+</section>
+
+<style>
+  article .speaker-card {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 1.25rem;
+    align-items: start;
+    padding: 1.25rem;
+    margin: 1rem 0;
+    background: #fff;
+    border: 1px solid var(--SITE-BORDER, #e2e8f0);
+    border-left: 3px solid var(--SITE-BRAND-BLUE, #0082ba);
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+  }
+  article .speaker-card:not(:has(.speaker-photo)) {
+    grid-template-columns: 1fr;     /* no photo → single column */
+  }
+  article .speaker-card .speaker-photo {
+    width: 180px;
+    height: 180px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--SITE-SURFACE, #f8fafc);
+  }
+  article .speaker-card .speaker-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  article .speaker-card .speaker-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--SITE-HEADING, #0f172a);
+    margin: 0 0 0.4rem;
+    line-height: 1.3;
+  }
+  article .speaker-card .speaker-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.65rem;
+    font-size: 0.95rem;
+    margin-bottom: 0.4rem;
+  }
+  article .speaker-card .speaker-name {
+    font-weight: 600;
+    color: var(--SITE-TEXT, #334155);
+  }
+  article .speaker-card .speaker-name a {
+    color: var(--SITE-BRAND-BLUE, #0082ba);
+    text-decoration: none;
+  }
+  article .speaker-card .speaker-name a:hover { text-decoration: underline; }
+  article .speaker-card .speaker-affiliation {
+    color: var(--SITE-TEXT-MUTED, #64748b);
+    font-style: italic;
+  }
+  article .speaker-card .speaker-when-where {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1rem;
+    font-size: 0.85rem;
+    color: var(--SITE-TEXT-MUTED, #64748b);
+    margin-bottom: 0.75rem;
+  }
+  article .speaker-card .speaker-when-where i {
+    color: var(--SITE-BRAND-BLUE, #0082ba);
+    font-size: 0.82rem;
+    margin-right: 0.15rem;
+    width: 1em;
+  }
+  article .speaker-card .speaker-content {
+    color: var(--SITE-TEXT, #334155);
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+  article .speaker-card .speaker-content > :first-child { margin-top: 0; }
+  article .speaker-card .speaker-content > :last-child  { margin-bottom: 0; }
+  @media (max-width: 700px) {
+    article .speaker-card { grid-template-columns: 1fr; padding: 1rem; }
+    article .speaker-card .speaker-photo { width: 100%; height: 220px; }
+  }
+</style>

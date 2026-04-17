@@ -1,0 +1,28 @@
+name: docs-build-deployment
+
+on:
+  push:              # Build on all pushes but only deploy from main
+  workflow_dispatch: # Allow manual runs (also how configure-site.yml re-triggers this)
+
+jobs:
+  deploy:
+    name: Run deploy
+    runs-on: ubuntu-latest
+    # Only deploy from main. Non-main pushes still build to catch breakage,
+    # but they do not publish.
+    if: github.event_name != 'push' || github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          submodules: true  # Fetch the hugo-theme-relearn submodule
+
+      - name: Build site
+        uses: ./.github/actions/build_site
+
+      - name: Deploy site
+        uses: ./.github/actions/deploy_site
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}

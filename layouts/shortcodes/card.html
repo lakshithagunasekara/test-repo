@@ -1,0 +1,50 @@
+{{- /*
+  {{< card title="..." >}}  markdown  {{< /card >}}
+
+  Refreshed card — thin IEEE-blue top accent, dark bold title (no solid
+  coloured header), subtle shadow, hover lift from custom.css.
+*/ -}}
+<div class="card">
+    {{- with .Get "title" }}<h3 class="card-header">{{ . }}</h3>{{ end }}
+    <div class="card-body">
+        {{ .Inner | .Page.RenderString }}
+    </div>
+</div>
+
+<style>
+  article .card {
+    background: #fff;
+    border: 1px solid var(--SITE-BORDER, #e2e8f0);
+    border-top: 3px solid var(--SITE-BRAND-BLUE, #0082ba);
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+    margin: 1rem 0;
+    overflow: hidden;
+  }
+  article .card > .card-header {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--SITE-HEADING, #0f172a);
+    background: transparent;
+    padding: 0.9rem 1.25rem 0.4rem;
+    margin: 0;
+    border: 0;
+  }
+  article .card > .card-body {
+    padding: 0.25rem 1.25rem 1rem;
+    color: var(--SITE-TEXT, #334155);
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+  article .card > .card-body ul,
+  article .card > .card-body ol {
+    padding-inline-start: 1.25rem;
+    margin: 0.4rem 0;
+  }
+  article .card > .card-body ul li,
+  article .card > .card-body ol li {
+    margin: 0.2rem 0;
+  }
+  article .card > .card-body > p:first-child { margin-top: 0; }
+  article .card > .card-body > p:last-child  { margin-bottom: 0; }
+</style>

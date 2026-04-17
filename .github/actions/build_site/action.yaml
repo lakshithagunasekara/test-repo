@@ -1,0 +1,45 @@
+name: Build site
+description: Build the Hugo site for later deploy on GitHub Pages.
+runs:
+  using: composite
+  steps:
+    - name: Setup Hugo
+      uses: peaceiris/actions-hugo@v3
+      with:
+        # Keep this in sync with .tool-versions at the project root.
+        hugo-version: '0.141.0'
+        extended: true
+
+    - name: Generate static/CNAME from baseURL
+      shell: bash
+      working-directory: ${{ github.workspace }}
+      # Reads baseURL from config/_default/hugo.toml and writes the bare host
+      # to static/CNAME so GitHub Pages serves the site on the custom domain.
+      # hugo.toml is the single source of truth (see the top of that file).
+      run: |
+        python3 - <<'PY'
+        import re
+        from pathlib import Path
+        conf = Path("config/_default/hugo.toml")
+        text = conf.read_text(encoding="utf-8")
+        m = re.search(r'^baseURL\s*=\s*"([^"]+)"', text, re.MULTILINE)
+        if not m:
+            raise SystemExit("baseURL not found in config/_default/hugo.toml")
+        host = re.sub(r'^https?://', '', m.group(1)).rstrip('/')
+        out = Path("static/CNAME")
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(host + "\n", encoding="utf-8")
+        print(f"wrote static/CNAME -> {host}")
+        PY
+
+    - name: Build site
+      shell: bash
+      working-directory: ${{ github.workspace }}
+      # Theme is set in config/_default/hugo.toml, so no --theme flag is needed.
+      run: |
+        hugo \
+          --source . \
+          --destination public \
+          --cleanDestinationDir \
+          --gc \
+          --minify

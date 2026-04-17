@@ -1,0 +1,50 @@
+{{- /*
+  Override of Relearn's topbar/area/end.html. Prepends the IEEE IES and IEEE
+  parent-org logos to the right side of the existing topbar, then renders the
+  standard Relearn topbar buttons unchanged. Keeps logos in the SAME header bar
+  as breadcrumbs / topbar controls (no extra row).
+
+  When bumping Relearn: re-check that the button list below matches upstream
+  (themes/hugo-theme-relearn/layouts/partials/topbar/area/end.html) and keep
+  this override in sync.
+*/ -}}
+<div class="site-brand-logos">
+  <a href="https://www.ieee-ies.org/" target="_blank" rel="noopener" aria-label="IEEE IES">
+    <img src="{{ "images/ies.png" | relURL }}" alt="IEEE IES">
+  </a>
+  <a href="https://www.ieee.org/" target="_blank" rel="noopener" aria-label="IEEE">
+    <img src="{{ "images/ieee.png" | relURL }}" alt="IEEE">
+  </a>
+  {{- /* Add additional partner/host logos here as needed, e.g.:
+  <a href="https://www.your-host-university.example/" target="_blank" rel="noopener" aria-label="Host Logo">
+    <img src="{{ "images/host-logo.png" | relURL }}" alt="Host Logo">
+  </a>
+  */ -}}
+</div>
+<style>
+  .site-brand-logos {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0 0.5rem;
+    height: 100%;
+  }
+  .site-brand-logos a { display: flex; align-items: center; }
+  .site-brand-logos img {
+    max-height: 2rem;
+    height: 2rem;
+    width: auto;
+    display: block;
+  }
+  @media (max-width: 576px) {
+    .site-brand-logos img { max-height: 1.5rem; height: 1.5rem; }
+    .site-brand-logos { gap: 0.4rem; padding: 0 0.25rem; }
+  }
+</style>
+{{- partial "topbar/button/edit.html" (dict "page" .) }}
+{{- partial "topbar/button/source.html" (dict "page" .) }}
+{{- partial "topbar/button/markdown.html" (dict "page" .) }}
+{{- partial "topbar/button/print.html" (dict "page" .) }}
+{{- partial "topbar/button/prev.html" (dict "page" .) }}
+{{- partial "topbar/button/next.html" (dict "page" .) }}
+{{- partial "topbar/button/more.html" (dict "page" .) }}

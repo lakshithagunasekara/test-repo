@@ -1,0 +1,37 @@
+{{- /*
+  Minimal logo override. Relearn 9.x's default `logo.html` delegates to
+  `auto-logo.html`, which is built around inline-SVG logos and adds
+  lazy-loading / figure-image styling that doesn't suit a simple PNG
+  conference logo. We render a plain <img> from `params.logo.src` instead.
+
+  Sidebar title under the logo is opt-in via `params.linkTitle`. Empty or
+  unset → only the logo image renders; we do NOT fall back to site.Title
+  (that's reserved for the browser tab / OpenGraph).
+
+  All layout CSS for #R-logo lives in static/css/custom.css. Inline <style>
+  blocks in this partial end up inside <div id="R-header-wrapper"> between
+  the <a> and <search>, which some browsers silently skip — keep styles in
+  the stylesheet.
+*/ -}}
+{{- $title := site.Params.linkTitle }}
+{{- $alt := $title | default site.Title }}
+{{- $logoSrc := (site.Params.logo).src | default "/images/logo.png" }}
+{{- /* Tag the logo-image span with data-r-logo-variant for every configured
+       theme variant. Relearn's format-html.css contains a rule that hides
+       #R-logo.R-default when it has no variant-tagged image AND no logo-title.
+       Without this attribute, the whole logo disappears when linkTitle is
+       empty (no logo-title element). */ -}}
+{{- $variants := slice }}
+{{- range site.Params.themeVariant }}
+  {{- if reflect.IsMap . }}{{ $variants = $variants | append .identifier }}
+  {{- else }}{{ $variants = $variants | append . }}{{- end }}
+{{- end }}
+{{- $variantAttr := delimit $variants " " }}
+<a id="R-logo" class="R-default direction-column" href="{{ partial "relLangPrettyUglyURL.hugo" (dict "to" site.Home) }}">
+  <span class="logo-image default-animation site-logo-wrap" data-r-logo-variant="{{ $variantAttr }}">
+    <img src="{{ $logoSrc | relURL }}" alt="{{ $alt }}" class="site-logo">
+  </span>
+  {{- with $title }}
+  <span class="logo-title default-animation">{{ . }}</span>
+  {{- end }}
+</a>

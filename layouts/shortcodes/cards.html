@@ -1,0 +1,55 @@
+{{- /*
+  Responsive grid wrapper for multiple <card> shortcodes. Auto-fits the cards
+  side-by-side on wide screens and stacks them on mobile. Use it whenever you
+  have 2+ cards that conceptually belong together (e.g. committee groups,
+  sponsor categories, parallel tracks).
+
+  Usage:
+
+    {{< cards columns=3 >}}
+      {{< card title="Honorary Chairs" >}}
+      - Name 1, University 1
+      - Name 2, University 2
+      {{< /card >}}
+
+      {{< card title="General Chairs" >}}
+      - Name 3, University 3
+      {{< /card >}}
+
+      {{< card title="Program Chairs" >}}
+      - Name 4, University 4
+      - Name 5, University 5
+      {{< /card >}}
+    {{< /cards >}}
+
+  Params:
+    columns — preferred max columns on wide screens (default: 2). Cards still
+              auto-wrap to fit narrower viewports regardless.
+    minWidth — minimum width per card before wrapping (default: 260px)
+*/ -}}
+{{- $columns  := .Get "columns"  | default 2 }}
+{{- $minWidth := .Get "minWidth" | default "260px" }}
+<div class="cards-grid"
+     style="--cards-min: {{ $minWidth }}; --cards-max-cols: {{ $columns }};">
+  {{ .Inner }}
+</div>
+
+<style>
+  article .cards-grid {
+    display: grid;
+    /* repeat(auto-fit, minmax(MIN, 1fr)) — auto-wraps to fit; the max-cols
+       limit is enforced via max-width on the container. */
+    grid-template-columns: repeat(auto-fit, minmax(var(--cards-min, 260px), 1fr));
+    gap: 1rem;
+    margin: 1rem 0;
+    align-items: stretch;
+  }
+  /* When a child <article .card> sits inside a grid item, stretch it. */
+  article .cards-grid > .card {
+    margin: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  article .cards-grid > .card > .card-body { flex: 1 1 auto; }
+</style>

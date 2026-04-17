@@ -1,0 +1,85 @@
+{{- /*
+  {{< pdf-embed type="external" url="..." >}}
+  {{< pdf-embed type="local" url="/docs/paper.pdf" >}}
+
+  Refreshed: wrapped in a card-like container with a thin border, subtle
+  shadow and a header row that shows an "Open in new tab" link (useful fallback
+  when iframe PDF viewers misbehave on mobile/Safari). Default aspect ratio
+  16:9 (overridable with ratio="4:3" etc).
+
+  Params:
+    type  — "external" (Google Docs viewer) or "local" (direct iframe)
+    url   — PDF URL (required)
+    ratio — "16:9" (default) | "4:3" | "a4" | custom "W:H"
+*/ -}}
+{{- $type  := .Get "type" }}
+{{- $url   := .Get "url" | absURL }}
+{{- $ratio := .Get "ratio" | default "16:9" }}
+{{- $padPct := "56.25%" }}
+{{- if eq $ratio "4:3" }}{{ $padPct = "75%" }}
+{{- else if eq $ratio "a4" }}{{ $padPct = "141.4%" }}
+{{- else if in $ratio ":" }}
+  {{- $parts := split $ratio ":" }}
+  {{- if and (ge (len $parts) 2) (gt (float (index $parts 0)) 0.0) }}
+    {{- $padPct = printf "%.2f%%" (mul (div (float (index $parts 1)) (float (index $parts 0))) 100.0) }}
+  {{- end }}
+{{- end }}
+<figure class="pdf-embed">
+  <div class="pdf-embed-meta">
+    <span class="pdf-embed-label">📄 PDF document</span>
+    <a href="{{ $url }}" target="_blank" rel="noopener" class="pdf-embed-link">Open in new tab ↗</a>
+  </div>
+  <div class="pdf-embed-frame" style="--pdf-ratio: {{ $padPct }};">
+    {{- if eq $type "external" }}
+    <iframe src="https://docs.google.com/gview?url={{ $url }}&embedded=true" frameborder="0" loading="lazy" title="Embedded PDF"></iframe>
+    {{- else if eq $type "local" }}
+    <iframe src="{{ $url }}" type="application/pdf" frameborder="0" loading="lazy" title="Embedded PDF"></iframe>
+    {{- else }}
+    <p class="pdf-embed-error">Invalid <code>type</code> on pdf-embed. Use <code>type="external"</code> or <code>type="local"</code>.</p>
+    {{- end }}
+  </div>
+</figure>
+
+<style>
+  article .pdf-embed {
+    margin: 1rem 0;
+    border: 1px solid var(--SITE-BORDER, #e2e8f0);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+  }
+  article .pdf-embed .pdf-embed-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0.9rem;
+    background: var(--SITE-SURFACE, #f8fafc);
+    border-bottom: 1px solid var(--SITE-BORDER, #e2e8f0);
+    font-size: 0.85rem;
+    color: var(--SITE-TEXT-MUTED, #64748b);
+  }
+  article .pdf-embed .pdf-embed-label { font-weight: 500; }
+  article .pdf-embed .pdf-embed-link {
+    color: var(--SITE-BRAND-BLUE, #0082ba);
+    text-decoration: none;
+  }
+  article .pdf-embed .pdf-embed-link:hover { text-decoration: underline; }
+  article .pdf-embed .pdf-embed-frame {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: var(--pdf-ratio, 56.25%);
+    background: #fff;
+  }
+  article .pdf-embed .pdf-embed-frame iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+  article .pdf-embed .pdf-embed-error {
+    padding: 1rem;
+    color: #b91c1c;
+  }
+</style>

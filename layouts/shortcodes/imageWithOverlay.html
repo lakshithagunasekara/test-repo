@@ -1,0 +1,71 @@
+{{- /*
+  {{< imageWithOverlay src="..." alt="..." name="..." company="..." location="..." >}}
+
+  Single image with overlay caption. Same visual treatment as imagesRow entries
+  (gradient overlay, rounded corners, subtle shadow) — good for standalone
+  chair photos or sponsor highlights.
+
+  Params:
+    src      — image path (required)
+    alt      — alt text (recommended)
+    name, company, location — overlay text (all optional; omit → blank overlay)
+    width    — CSS width of the whole block (default: 250px)
+    height   — CSS height (default: auto; aspect ratio from image)
+*/ -}}
+{{- $width  := .Get "width"  | default "250px" }}
+{{- $height := .Get "height" | default "auto" }}
+<figure class="single-image-overlay" style="--io-width: {{ $width }}; --io-height: {{ $height }};">
+  <img src="{{ .Get "src" }}" alt="{{ .Get "alt" }}" loading="lazy">
+  <figcaption class="overlay">
+    {{- with .Get "name"    }}<span class="overlay-name">{{ . }}</span>{{ end }}
+    {{- with .Get "company" }}<span class="overlay-company">{{ . }}</span>{{ end }}
+    {{- with .Get "location"}}<span class="overlay-location">{{ . }}</span>{{ end }}
+  </figcaption>
+</figure>
+
+<style>
+  article .single-image-overlay {
+    position: relative;
+    display: inline-block;
+    width: var(--io-width);
+    height: var(--io-height);
+    max-width: 100%;
+    margin: 0.5rem 0.75rem 0.5rem 0;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08),
+                0 1px 2px rgba(15, 23, 42, 0.06);
+    transition: box-shadow 0.2s ease, transform 0.15s ease;
+    vertical-align: top;
+  }
+  article .single-image-overlay:hover {
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12),
+                0 3px 6px rgba(15, 23, 42, 0.08);
+    transform: translateY(-2px);
+  }
+  article .single-image-overlay img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  article .single-image-overlay .overlay {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 1.5rem 0.9rem 0.7rem;
+    background: linear-gradient(180deg,
+                                rgba(15, 23, 42, 0)    0%,
+                                rgba(15, 23, 42, 0.65) 45%,
+                                rgba(15, 23, 42, 0.88) 100%);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.3;
+    font-size: 0.85rem;
+  }
+  article .single-image-overlay .overlay .overlay-name     { font-weight: 600; font-size: 1rem; }
+  article .single-image-overlay .overlay .overlay-company  { opacity: 0.9; }
+  article .single-image-overlay .overlay .overlay-location { opacity: 0.75; font-size: 0.8rem; }
+</style>

@@ -1,0 +1,145 @@
+# ============================================================================
+# === PER-CONFERENCE SETTINGS — edit ONLY these three lines per conference ==
+# ----------------------------------------------------------------------------
+# When cloning this template for a new conference, edit the three values in
+# this block, plus the home-page title+description in content/_index.en.md.
+# Commit. The deploy workflow auto-generates /CNAME from baseURL and
+# publishes the site to GitHub Pages.
+#
+# Editable values lives in:
+#   hugo.toml  (this file)       → baseURL, title, [params].linkTitle
+#   _index.en.md (home page)     → title, description (hero + meta tags)
+# Everything further down in this file is generic template machinery.
+# ============================================================================
+
+# Public URL of the deployed site (scheme + host, no trailing slash).
+# Used by Hugo for absolute URLs, RSS, sitemaps, OpenGraph — AND as the value
+# written to `static/CNAME` at build time by .github/actions/build_site.
+baseURL = "https://testing.ieee-ies.org"
+
+# FULL conference title. Used for: browser tab (after the page name),
+# OpenGraph / Twitter card `site_name`, RSS feed. Full prose form, search-
+# engine friendly — e.g. "IEEE International Conference on Responsible AI 2026".
+title = "IEEE International Conference"
+
+# OPTIONAL short title / abbreviation shown in the sidebar below the logo —
+# e.g. "IEEE IRAI 2026". Set this when the full `title` above is too long for
+# the narrow sidebar.
+#   • Set to a string  → that string is shown
+#   • Set to ""        → no title under the logo (logo image only)
+#   • Remove this line → no title under the logo (logo image only)
+# Does NOT affect the browser tab or OpenGraph — those always use `title`.
+#params.linkTitle = "IEEE IRAI 2026"
+
+# OPTIONAL body font. Webfonts are served from fonts.bunny.net — a privacy-
+# respecting mirror of Google Fonts that doesn't log visitor IPs and sets no
+# cookies (so no consent banner needed).
+# Pick one of:
+#   "inter"         — clean and modern (default); used by Stripe, GitHub
+#   "dm-sans"       — geometric, slightly softer curves
+#   "source-sans-3" — Adobe's classic humanist sans; neutral and very legible
+#   "ibm-plex-sans" — IBM's technical-document typeface; strong IEEE fit
+#   "system"        — no webfont, native OS fonts (fastest, no network call)
+params.fontFamily = "inter"
+
+# ============================================================================
+# === GENERIC TEMPLATE MACHINERY — don't edit below unless you know why ======
+# ============================================================================
+
+# canonicalization will only be used for the sitemap.xml and index.xml files;
+# if set to false, a site served from a subdirectory will generate wrong links
+# inside of the above mentioned files; if you serve the page from the servers root
+# you are free to set the value to false as recommended by the official Hugo documentation
+canonifyURLs = true # true -> all relative URLs would instead be canonicalized using baseURL
+# required value to serve this page from a webserver AND the file system;
+# if you don't want to serve your page from the file system, you can also set this value
+# to false
+relativeURLs = true # true -> rewrite all relative URLs to be relative to the current content
+# if you set uglyURLs to false, this theme will append 'index.html' to any branch bundle link
+# so your page can be also served from the file system; if you don't want that,
+# set disableExplicitIndexURLs=true in the [params] section
+uglyURLs = false    # true -> basic/index.html -> basic.html
+
+theme = "hugo-theme-relearn"
+
+# make sure your defaultContentLanguage is the first one in the [languages]
+# array below, as the theme needs to make assumptions on it
+defaultContentLanguage = "en"
+
+[outputs]
+  home = ["HTML", "RSS"]
+  section = ["HTML", "RSS"]
+  page = ["HTML", "RSS"]
+
+[markup]
+  [markup.highlight]
+    # line numbers in a table layout will shift if code is wrapping, so better
+    # not use it; visually both layouts have the same look and behavior
+    lineNumbersInTable = false
+
+    # the shipped variants come with their own modified chroma syntax highlightning
+    # stylesheets which are linked in your generated HTML pages; you can use Hugo to generate
+    # own stylesheets to your liking and use them in your variant;
+    # if you want to use Hugo's internal styles instead of the shipped stylesheets:
+    # - remove `noClasses` or set `noClasses = true`
+    # - set `style` to a predefined style name
+    # note: with using the internal styles, the `--CODE-theme` setting in your variant
+    # stylesheet will be ignored and the internal style is used for all variants and
+    # even print
+    noClasses = false
+
+  [markup.goldmark.renderer]
+    # activated for this showcase to use HTML and JavaScript; decide on your own needs;
+    # if in doubt, remove this line
+    unsafe = true
+
+  [markup.tableOfContents]
+    startLevel = 1
+    endLevel = 1
+    ordered = false
+
+# allows `hugo server` to display this showcase in IE11; this is used for testing, as we
+# are still supporting IE11 - although with degraded experience; if you don't care about
+# `hugo server` or browsers of ancient times, fell free to remove this whole block
+[server]
+  [[server.headers]]
+    for = "**.html"
+    [server.headers.values]
+       X-UA-Compatible = "IE=edge"
+
+[languages]
+  [languages.en]
+    # `title` falls back to the top-level title above — no need to duplicate it.
+    weight = 1
+    languageName = "English"
+    [languages.en.params]
+      landingPageName = "Home"
+
+[module]
+  [[module.mounts]]
+    source = 'archetypes'
+    target = 'archetypes'
+  [[module.mounts]]
+    source = 'assets'
+    target = 'assets'
+  [[module.mounts]]
+    source = 'content'
+    target = 'content'
+  [[module.mounts]]
+    source = 'data'
+    target = 'data'
+  [[module.mounts]]
+    source = 'i18n'
+    target = 'i18n'
+  [[module.mounts]]
+    source = 'static/images'
+    target = 'static/images'
+  [[module.mounts]]
+    source = 'layouts'
+    target = 'layouts'
+  [[module.mounts]]
+    source = 'static'
+    target = 'static'
+
+# (Most theme params live in params.toml. The short site title is set
+# via [params] linkTitle near the top of this file.)

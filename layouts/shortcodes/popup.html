@@ -1,0 +1,169 @@
+{{- /*
+  Page-load popup / modal. Place anywhere in a page's Markdown — it shows on
+  page load with an optional delay, can be dismissed with the X button, Esc
+  key, or by clicking the backdrop. Set `showOnce="true"` to remember the
+  user's dismissal so the popup doesn't reappear on every visit.
+
+  Usage (block form, markdown body):
+
+      < popup
+          id="welcome-2026"            (required, unique per popup)
+          title="Welcome!"             (optional headline shown bold)
+          showOnce="true"              (default: false; true → localStorage remembers dismissal)
+          delay="500"                  (default: 250 ms before showing on page load)
+          maxWidth="520px"             (default: 520px)
+      >
+      Markdown content. **Bold**, [links](...), images all work.
+
+      [Submit your paper](https://...)
+      < /popup >
+
+  Notes:
+    - Multiple popups on one page are fine — each needs a unique `id`.
+    - When `showOnce="true"`, change the `id` if you want to re-show the
+      popup to users who already dismissed the previous version.
+    - To trigger manually instead of on load, set `delay="-1"` and call
+      `window.openPopup('your-id')` from your own button.
+*/ -}}
+{{- $id       := .Get "id" }}
+{{- $title    := .Get "title" }}
+{{- $showOnce := .Get "showOnce" | default "false" }}
+{{- $delay    := .Get "delay"    | default "250" }}
+{{- $maxWidth := .Get "maxWidth" | default "520px" }}
+{{- if not $id }}
+  {{- errorf "popup shortcode in %q requires an `id` parameter" .Page.Path }}
+{{- end }}
+<div id="popup-{{ $id }}" class="popup-overlay" role="dialog" aria-modal="true"
+     aria-labelledby="popup-{{ $id }}-title" hidden
+     data-show-once="{{ $showOnce }}" data-delay="{{ $delay }}">
+  <div class="popup-card" style="--popup-max-width: {{ $maxWidth }};" role="document">
+    <button type="button" class="popup-close" aria-label="Close" onclick="window.closePopup('{{ $id }}')">×</button>
+    {{- with $title }}<h3 id="popup-{{ $id }}-title" class="popup-title">{{ . }}</h3>{{ end }}
+    <div class="popup-body">
+      {{ .Inner | .Page.RenderString }}
+    </div>
+  </div>
+</div>
+
+<style>
+  .popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 1rem;
+    animation: popupFadeIn 0.2s ease-out;
+  }
+  .popup-overlay[hidden] { display: none; }
+  @keyframes popupFadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  .popup-overlay .popup-card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25),
+                0 8px 16px rgba(0, 0, 0, 0.15);
+    max-width: var(--popup-max-width, 520px);
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 1.75rem 1.75rem 1.5rem;
+    position: relative;
+    animation: popupSlideUp 0.25s ease-out;
+  }
+  @keyframes popupSlideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+  .popup-overlay .popup-close {
+    position: absolute;
+    top: 0.6rem;
+    right: 0.7rem;
+    background: transparent;
+    border: 0;
+    font-size: 1.6rem;
+    line-height: 1;
+    color: var(--SITE-TEXT-MUTED, #64748b);
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .popup-overlay .popup-close:hover {
+    background: var(--SITE-SURFACE, #f8fafc);
+    color: var(--SITE-HEADING, #0f172a);
+  }
+  .popup-overlay .popup-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--SITE-HEADING, #0f172a);
+    margin: 0 1.5rem 0.75rem 0;
+    line-height: 1.3;
+  }
+  .popup-overlay .popup-body {
+    color: var(--SITE-TEXT, #334155);
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+  .popup-overlay .popup-body > :first-child { margin-top: 0; }
+  .popup-overlay .popup-body > :last-child  { margin-bottom: 0; }
+  .popup-overlay .popup-body p { text-align: left; }
+  .popup-overlay .popup-body a {
+    color: var(--SITE-BRAND-BLUE, #0082ba);
+    font-weight: 500;
+  }
+</style>
+
+{{- /* Inline script defines window.openPopup / closePopup once, then wires
+       up this specific popup. Safe to include from multiple shortcodes
+       because the IIFE checks if the helpers already exist. */ -}}
+<script>
+(function () {
+  if (!window.openPopup) {
+    window.openPopup = function (id) {
+      var el = document.getElementById('popup-' + id);
+      if (!el) return;
+      el.hidden = false;
+      // Trap focus on the close button for keyboard a11y.
+      var closeBtn = el.querySelector('.popup-close');
+      if (closeBtn) closeBtn.focus();
+    };
+    window.closePopup = function (id) {
+      var el = document.getElementById('popup-' + id);
+      if (!el) return;
+      el.hidden = true;
+      if (el.dataset.showOnce === 'true') {
+        try { localStorage.setItem('popup-dismissed:' + id, '1'); } catch (e) {}
+      }
+    };
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape') return;
+      var open = document.querySelector('.popup-overlay:not([hidden])');
+      if (!open) return;
+      var id = open.id.replace(/^popup-/, '');
+      window.closePopup(id);
+    });
+  }
+  document.addEventListener('DOMContentLoaded', function () {
+    var el = document.getElementById('popup-{{ $id }}');
+    if (!el) return;
+    // Click on backdrop (outside the card) closes.
+    el.addEventListener('click', function (e) {
+      if (e.target === el) window.closePopup('{{ $id }}');
+    });
+    // Honour the show-once flag.
+    if (el.dataset.showOnce === 'true') {
+      try {
+        if (localStorage.getItem('popup-dismissed:{{ $id }}') === '1') return;
+      } catch (e) {}
+    }
+    var delay = parseInt(el.dataset.delay, 10);
+    if (delay < 0) return;     // delay=-1 → manual trigger only
+    setTimeout(function () { window.openPopup('{{ $id }}'); }, isNaN(delay) ? 250 : delay);
+  });
+})();
+</script>

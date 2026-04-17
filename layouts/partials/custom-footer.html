@@ -1,0 +1,9 @@
+{{- /*
+  Relearn 9.x calls this partial at the very end of <body>, outside the
+  scrollable content area. It's intended for trailing <script> tags only
+  (runs after theme JS, DOM is fully loaded).
+
+  The visible site footer (IES branding, social links, copyright) lives in
+  layouts/partials/site-footer.html and is injected inside #R-body via the
+  baseof.html override so it appears at the bottom of the scrollable content.
+*/ -}}
