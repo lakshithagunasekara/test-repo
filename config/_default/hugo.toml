@@ -15,7 +15,7 @@
 # Public URL of the deployed site (scheme + host, no trailing slash).
 # Used by Hugo for absolute URLs, RSS, sitemaps, OpenGraph — AND as the value
 # written to `static/CNAME` at build time by .github/actions/build_site.
-baseURL = "https://testing.ieee-ies.org"
+baseURL = "https://test123.ieee-ies.org"
 
 # FULL conference title. Used for: browser tab (after the page name),
 # OpenGraph / Twitter card `site_name`, RSS feed. Full prose form, search-
