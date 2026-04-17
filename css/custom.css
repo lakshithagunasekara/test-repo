@@ -1,0 +1,400 @@
+/*
+ * Custom CSS for the IEEE IES conference template.
+ *
+ * Loaded automatically by Relearn 9.x's custom-header.html (we preserve that
+ * convention in layouts/partials/custom-header.html). Scope every rule under
+ * specific selectors so future Relearn upgrades don't fight with these.
+ *
+ * Styling targets match the look of the previous wictemplate24 / irai2026
+ * sites on Relearn 6.4.1 (shadowed topbar, bold IEEE-blue breadcrumbs,
+ * tighter sidebar menu spacing, sized logos).
+ */
+
+/* ------------------------------------------------------------------------
+ * Typography — `--SITE-FONT-STACK` is set by custom-header.html from the
+ * `params.fontFamily` value in hugo.toml (fonts.bunny.net webfont + fallback
+ * stack that includes Aptos for Office users and native OS fonts).
+ * We just apply it consistently here.
+ * ------------------------------------------------------------------------ */
+html, body, #R-body, #R-sidebar {
+  font-family: var(--SITE-FONT-STACK);
+}
+h1, h2, h3, h4, h5, h6,
+#R-topbar .topbar-breadcrumbs,
+#R-logo .logo-title,
+.btn, button, input, select, textarea {
+  font-family: var(--SITE-FONT-STACK);
+}
+
+/* ------------------------------------------------------------------------
+ * Palette — a coherent slate-based grey ramp paired with IEEE blue and
+ * IES orange, so greys on the site feel like one family instead of mixed
+ * bluish/neutral/warm greys. Override Relearn's public color variables so
+ * any future theme variant (e.g. zen-dark) can still supply its own values.
+ * Slate reference:
+ *   50:#f8fafc  100:#f1f5f9  200:#e2e8f0  300:#cbd5e1  400:#94a3b8
+ *   500:#64748b 600:#475569  700:#334155  800:#1e293b  900:#0f172a
+ * ------------------------------------------------------------------------ */
+:root {
+  --SITE-TEXT:        #334155;  /* slate-700 — body */
+  --SITE-TEXT-MUTED:  #64748b;  /* slate-500 — captions, metadata */
+  --SITE-HEADING:     #0f172a;  /* slate-900 — headings (slightly darker than body) */
+  --SITE-BORDER:      #e2e8f0;  /* slate-200 — hairlines, dividers */
+  --SITE-SURFACE:     #f8fafc;  /* slate-50 — subtle backgrounds */
+  --SITE-BRAND-BLUE:  #0082ba;  /* IEEE blue */
+  --SITE-BRAND-ORANGE: #ec8c00; /* IES orange */
+
+  /* Override Relearn's public color variables so the body/border/etc.
+     pick up the slate ramp. These fall back to our slate values in
+     Relearn's internal cascade. */
+  --MAIN-TEXT-color:          var(--SITE-TEXT);
+  --MAIN-LINK-color:          var(--SITE-BRAND-BLUE);
+  --MAIN-LINK-HOVER-color:    #005f8a;  /* slightly deeper IEEE blue */
+}
+body, main#R-body-inner article {
+  color: var(--SITE-TEXT);
+}
+main#R-body-inner article :is(h1, h2, h3, h4, h5, h6) {
+  color: var(--SITE-HEADING);
+}
+main#R-body-inner article hr,
+#R-topbar {
+  border-color: var(--SITE-BORDER);
+}
+
+/* ------------------------------------------------------------------------
+ * Hover/focus polish — smooth transitions on interactive elements,
+ * visible focus rings for keyboard navigation.
+ * ------------------------------------------------------------------------ */
+#R-sidebar a, #R-sidebar label, #R-topbar a,
+.btn, button, .card, article a {
+  transition: color .15s ease, background-color .15s ease,
+              border-color .15s ease, box-shadow .2s ease, transform .15s ease;
+}
+:focus-visible {
+  outline: 2px solid #0082ba;        /* IEEE blue */
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+/* Restore Relearn's intentional outline-removal on a few elements that don't
+   benefit from a ring (e.g. internal scrollers / overlays). */
+#R-body-inner:focus-visible,
+#R-body-overlay:focus-visible {
+  outline: none;
+}
+
+/* ------------------------------------------------------------------------
+ * Card hover lift (used by the {{< card >}} shortcode). Subtle so it doesn't
+ * look like a CTA — just signals "this is a content block".
+ * ------------------------------------------------------------------------ */
+article .card {
+  transition: box-shadow .2s ease, transform .15s ease;
+}
+article .card:hover {
+  box-shadow: 0 6px 16px rgba(0,0,0,0.10), 0 2px 6px rgba(0,0,0,0.06);
+  transform: translateY(-1px);
+}
+
+/* ------------------------------------------------------------------------
+ * Slideshow text legibility — adds a soft dark-to-transparent gradient
+ * behind the overlay text so white text reads on light photos too.
+ * ------------------------------------------------------------------------ */
+#slideshow .text-overlay {
+  background: linear-gradient(135deg, rgba(0,0,0,0.55) 0%,
+                                       rgba(0,0,0,0.25) 50%,
+                                       rgba(0,0,0,0.0)  100%);
+  padding: 0.75rem 1rem 1.25rem;
+  border-radius: 4px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.4);  /* additional safety on bright spots */
+}
+
+/* ------------------------------------------------------------------------
+ * Topbar (header bar)
+ * - give it a clear min-height, a subtle shadow, and a small border
+ * ------------------------------------------------------------------------ */
+#R-topbar {
+    min-height: 5rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+#R-topbar .topbar-wrapper {
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+    background-color: rgba(134, 134, 134, 0.04);
+}
+
+/* Breadcrumb rendered as a prominent page title in IEEE blue. */
+#R-topbar .topbar-breadcrumbs {
+    flex-grow: 1;
+    margin: 0;
+    padding: 0 1rem;
+    font-size: 1.5rem;
+    line-height: 1.2;
+    color: #0082ba;
+    font-weight: 500;
+}
+@media (max-width: 991px) {
+    #R-topbar .topbar-breadcrumbs { font-size: 1.2rem; padding: 0 0.75rem; }
+}
+@media (max-width: 576px) {
+    #R-topbar .topbar-breadcrumbs { font-size: 1rem; padding: 0 0.5rem; }
+}
+
+/* ------------------------------------------------------------------------
+ * Sidebar logo (top of menu)
+ * - smaller max-height, centred, no gap padding so title sits close below
+ * - min-height on #R-logo so the flex container keeps the image visible
+ *   even when params.linkTitle is empty (no <span class="logo-title">)
+ * - Relearn 9.x hides .logo-image by default (it's designed for inline SVG);
+ *   we use <img>, so we override `display: none` via the .site-logo-wrap class
+ * ------------------------------------------------------------------------ */
+#R-sidebar #R-header-wrapper {
+    padding: 1.25rem 0.5rem 0.75rem;
+    text-align: center;
+}
+#R-logo.R-default {
+    min-height: 11rem;
+}
+#R-logo.R-default .logo-image.site-logo-wrap {
+    display: block;
+    width: 100%;
+    height: auto;
+    text-align: center;
+    padding: 0.25rem 0;
+    overflow: visible;
+}
+#R-logo.R-default .logo-image.site-logo-wrap > * {
+    max-width: none;
+}
+#R-logo.R-default img.site-logo {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    max-height: 11rem;
+    height: auto;
+    width: auto;
+}
+#R-logo.R-default .logo-title {
+    font-size: 1.35rem;
+    line-height: 1.2;
+    margin-top: 0.5rem;
+}
+
+/* ------------------------------------------------------------------------
+ * Sidebar search — moved out of #R-header-wrapper (next to the logo) and
+ * into a dedicated #R-sidebar-search block placed AFTER the menu items and
+ * BEFORE the IEEE/IES logo footer. Keeps the logo at full size at the top
+ * and tucks search out of the visual hierarchy where it isn't fighting
+ * for attention with the conference branding.
+ * ------------------------------------------------------------------------ */
+#R-sidebar #R-sidebar-search {
+    padding: 0.5rem 0.75rem 0.75rem;
+    border-top: 1px solid var(--SITE-BORDER, #e2e8f0);
+    margin-top: 0.5rem;
+}
+#R-sidebar #R-sidebar-search .searchbox {
+    margin: 0;
+}
+
+/* ------------------------------------------------------------------------
+ * Sidebar menu
+ * - tighter vertical rhythm between items (was too loose in Relearn 9.x default)
+ * ------------------------------------------------------------------------ */
+#R-sidebar ul.collapsible-menu > li {
+    margin-bottom: 0.1rem;
+}
+#R-sidebar ul.morespace.collapsible-menu > li {
+    margin-bottom: 0.1rem;
+}
+#R-sidebar ul.collapsible-menu > li > a.padding,
+#R-sidebar ul.collapsible-menu > li > span.padding {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    line-height: 1.3;
+}
+
+/* Relearn absolute-positions the collapsible chevron (input + label) with a
+   fixed top offset tuned to its default link padding. Our tighter padding
+   makes any fixed offset wrong. Center them against the first-line height
+   of the link instead — this stays correct regardless of padding changes. */
+#R-sidebar ul.collapsible-menu > li {
+    position: relative;
+}
+#R-sidebar ul.collapsible-menu > li > input,
+#R-sidebar ul.collapsible-menu.enlarge > li > input,
+#R-sidebar ul.collapsible-menu > li > label,
+#R-sidebar ul.collapsible-menu.enlarge > li > label {
+    top: 0.25rem;             /* match the link's padding-top */
+    margin-top: 0;
+    height: calc(1rem * 1.3); /* match the link's first-line height (font-size × line-height) */
+    display: flex;
+    align-items: center;
+}
+
+/* The Home button lives inside #R-homelinks which by default has a dark
+   "menu header" background (var(--INTERNAL-MENU-HEADER-BORDER-color)) and
+   white text. Override to match the regular sidebar background so Home reads
+   as a normal first menu item. */
+#R-sidebar #R-homelinks,
+#R-sidebar div#R-homelinks.default-animation,
+#R-sidebar #R-homelinks.homelinks {
+    background-color: transparent !important;
+    background: transparent !important;
+}
+/* Blanket transparent backgrounds inside homelinks — several possible elements
+   can paint a background and Relearn's variant CSS overrides our more specific
+   rules. Hit every candidate including inner ul/li/a. */
+#R-sidebar #R-homelinks,
+#R-sidebar #R-homelinks *,
+#R-sidebar #R-homelinks > .R-sidebarmenu,
+#R-sidebar #R-homelinks ul,
+#R-sidebar #R-homelinks li,
+#R-sidebar #R-homelinks li.active,
+#R-sidebar #R-homelinks li.active.visited,
+#R-sidebar #R-homelinks li > a,
+#R-sidebar #R-homelinks li.active > a,
+#R-sidebar #R-homelinks li.active.visited > a {
+    background: transparent !important;
+    background-color: transparent !important;
+}
+#R-sidebar #R-homelinks :is(a, span),
+#R-sidebar #R-homelinks li.active > a {
+    color: var(--INTERNAL-MENU-SECTIONS-LINK-color) !important;
+}
+#R-sidebar #R-homelinks a:hover {
+    color: var(--INTERNAL-MENU-SECTIONS-LINK-HOVER-color) !important;
+}
+
+/* The Home button lives in its own ul.space, which Relearn renders at a
+   smaller/tighter type scale than the main ul.enlarge.morespace menu. Bump
+   its typography to match the rest of the menu so "Home" doesn't look
+   visually out of place. */
+#R-sidebar #R-homelinks ul.collapsible-menu > li > a.padding,
+#R-sidebar #R-homelinks ul.collapsible-menu > li > span.padding {
+    font-size: 1.0625rem;
+    line-height: 1.3;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+}
+#R-sidebar #R-homelinks ul.collapsible-menu > li {
+    margin-bottom: 0.1rem;
+}
+#R-sidebar #R-homelinks :is(a, span),
+#R-sidebar #R-homelinks .collapsible-menu label,
+#R-sidebar #R-homelinks li.active > a,
+#R-sidebar #R-homelinks li.active > label {
+    color: var(--INTERNAL-MENU-SECTIONS-LINK-color);
+}
+#R-sidebar #R-homelinks a:hover,
+#R-sidebar #R-homelinks .collapsible-menu li:not(.active) > label:hover {
+    color: var(--INTERNAL-MENU-SECTIONS-LINK-HOVER-color);
+}
+#R-sidebar #R-homelinks ul.collapsible-menu > li.active > a {
+    background: transparent;
+    border: 1px solid transparent;
+    font-weight: 500;
+}
+
+/* When an expandable section is the active page, let the active highlight
+   (background + border) wrap the parent LI — so the H1-TOC sub-items render
+   INSIDE the box instead of outside it. Relearn's default only borders the
+   active <a>; we move that styling to <li.active> and strip it from <a>. */
+#R-sidebar ul.collapsible-menu > li.active.parent {
+    background-color: var(--INTERNAL-MAIN-BG-color);
+    border: 1px solid var(--INTERNAL-MENU-BORDER-color);
+    border-inline-end-color: var(--INTERNAL-MENU-SECTION-ACTIVE-CATEGORY-BORDER-color);
+    border-inline-end-width: 3px;
+    border-radius: 2px;
+    margin-block: 0.25rem;
+    padding-block: 0.1rem;
+    position: relative;
+}
+#R-sidebar ul.collapsible-menu > li.active.parent > a.padding {
+    border: none !important;
+    background: transparent !important;
+    width: 100% !important;
+    padding-left: 1.25rem;
+    padding-right: 1rem;
+}
+/* keep the chevron visible and positioned correctly inside the bordered LI */
+#R-sidebar ul.collapsible-menu > li.active.parent > input,
+#R-sidebar ul.collapsible-menu > li.active.parent > label {
+    margin-left: 0.25rem;
+}
+/* ensure page-toc sub-items don't overflow the bordered parent */
+#R-sidebar ul.collapsible-menu > li.active.parent > ul.page-toc-menu {
+    margin: 0;
+    padding-bottom: 0.25rem;
+}
+
+/* Page-TOC sub-items (H1 headings under each page). Styled like standard
+   sub-menu entries (no bullets, matching indent and weight). */
+#R-sidebar ul.page-toc-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 0.25rem 0;
+}
+#R-sidebar ul.page-toc-menu > li.page-toc-item {
+    margin-bottom: 0.05rem;
+}
+#R-sidebar ul.page-toc-menu > li.page-toc-item > a.padding {
+    padding-top: 0.2rem;
+    padding-bottom: 0.2rem;
+    padding-inline-start: 1.5rem;
+    font-size: 0.95rem;
+    line-height: 1.3;
+    display: block;
+    width: 100%;
+}
+
+/* ------------------------------------------------------------------------
+ * Menu footer (bottom-of-sidebar logos)
+ * - centered, stacked vertically with a gap, sized comfortably
+ * ------------------------------------------------------------------------ */
+#R-sidebar .menu-footer-class {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 1rem 0.75rem 1.25rem;
+    text-align: center;
+}
+#R-sidebar .menu-footer-class a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 100%;
+}
+#R-sidebar .menu-footer-class a img {
+    display: block;
+    max-height: 3.75rem;
+    max-width: 80%;
+    width: auto;
+    height: auto;
+    margin: 0 auto;
+}
+
+/* ------------------------------------------------------------------------
+ * Topbar site-brand logos (IES + IEEE — rendered via topbar/area/end.html)
+ * - sized to match the topbar height cleanly
+ * ------------------------------------------------------------------------ */
+#R-topbar .site-brand-logos {
+    gap: 1rem;
+    padding: 0 0.75rem;
+}
+#R-topbar .site-brand-logos img {
+    max-height: 2.25rem;
+    height: 2.25rem;
+    width: auto;
+}
+@media (max-width: 768px) {
+    #R-topbar .site-brand-logos { gap: 0.5rem; padding: 0 0.5rem; }
+    #R-topbar .site-brand-logos img { max-height: 1.75rem; height: 1.75rem; }
+}
+
+/* ------------------------------------------------------------------------
+ * Main content
+ * - justified paragraphs (preserved from the old site's nucleus.css tweak)
+ * ------------------------------------------------------------------------ */
+main#R-body-inner article p {
+    text-align: justify;
+}
